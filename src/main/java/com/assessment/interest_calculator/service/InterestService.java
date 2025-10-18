@@ -46,7 +46,7 @@ public class InterestService {
     
     @lombok.Data
     @lombok.Builder
-    static class InterestApplicationResult {
+    public static class InterestApplicationResult {
         private LocalDate date;
         private int totalAccountsProcessed;
         private int failedAccounts;
