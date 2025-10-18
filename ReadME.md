@@ -12,3 +12,13 @@ So,
 - The daily interest calculator will accumulate the interest everyday at 24 hour intervals. But not add it to the principal (yet).
 - At month end, add accumulated interest to principal. Next months daily calculations use NEW principal (which includes last month's interest).
 - Any penalties ex. late fees should be calculated and handled separately (not added to the principal). It is included to the total due.
+
+## Reccurring jobs
+
+### Daily Job
+- Calculates the interest based on the principal amount every day at 11:59:00 PM IST (Bec India).
+### Monthly Job
+- Adds the interest to the principal and clears the accumulated interest.
+
+## Technical notes and thoughts:
+- For the daily and monthly jobs, batch processing and locking would be useful for scaling up.
