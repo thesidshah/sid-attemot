@@ -1,0 +1,19 @@
+Take home Assignment: 
+ 
+1) Install PostgreSQL (or other database system if it’s already setup) in your desktop 
+and host a table with entries for id, name, interest rate, interest amount, 
+principal amount and date of disbursal.  
+2) Code a backend API using SpringBoot to apply interest on the principal amount 
+and update the interest amount at the end of every day at an exact time*. Make 
+sure your emphasis is on concurrency handling and efficiency. 
+3) Host the backend on localhost (127.0.0.1:8080) of your PC using apache tomcat 
+and demonstrate the functionality (put the exact time to be the demonstration 
+time). 
+ 
+This assignment is to be answered both theoretically (The approach you plan to 
+take) and practical. Additional marks for sharing failed attempts on what you 
+tried and what happened to the attempt according to you. 
+ 
+Even if you do not complete the assignment, partial marking will be there on 
+submission. 
+ 
