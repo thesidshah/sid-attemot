@@ -22,3 +22,4 @@ So,
 
 ## Technical notes and thoughts:
 - For the daily and monthly jobs, batch processing and locking would be useful for scaling up.
+- To make this code modular, I am writing a dockerfile and a docker-compose YAML.
