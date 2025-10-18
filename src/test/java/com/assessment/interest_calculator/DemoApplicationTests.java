@@ -1,4 +1,4 @@
-package com.example.interest_calculator;
+package com.assessment.interest_calculator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

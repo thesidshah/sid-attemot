@@ -1,4 +1,4 @@
-package com.example.interest_calculator;
+package com.assessment.interest_calculator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
