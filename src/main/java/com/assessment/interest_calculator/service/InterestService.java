@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,5 +54,8 @@ public class InterestService {
         long startTime = System.currentTimeMillis();
         AtomicInteger successCount = new AtomicInteger(0); // Thread-safe counter for successful updates
         AtomicInteger failureCount = new AtomicInteger(0); // Thread-safe counter for failed updates
+        AtomicReference<BigDecimal> totalInterestApplied = new AtomicReference<>(BigDecimal.ZERO); // Thread-safe accumulator for total interest applied
+
+        long totalAccounts;
     }
 }
