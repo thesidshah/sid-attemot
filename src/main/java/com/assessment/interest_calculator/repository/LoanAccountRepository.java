@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import jakarta.persistence.LockModeType;
 
 import com.assessment.interest_calculator.entity.LoanAccount;
 
@@ -29,4 +31,26 @@ public interface LoanAccountRepository extends JpaRepository<LoanAccount, Long> 
            "(la.lastInterestAppliedDate IS NULL"+ 
            " OR la.lastInterestAppliedDate < :forDate)")
            Page<LoanAccount> findAccountsNeedingInterestApplication(@Param("forDate")LocalDate forDate, Pageable pageable);
+
+    /**
+     * Find all accounts with pessimistic locking for update.
+     * This method locks the selected rows to prevent concurrent modifications.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT la FROM LoanAccount la WHERE " +
+           "(la.lastInterestAppliedDate IS NULL" +
+           " OR la.lastInterestAppliedDate < :forDate)")
+    Page<LoanAccount> findAccountsNeedingInterestApplicationWithLock(@Param("forDate")LocalDate forDate, Pageable pageable);
+
+    /**
+     * Count total accounts needing interest application for a given date.
+     * 
+     * @param forDate The date for which to count accounts needing interest application.
+     * @return The count of loan accounts needing interest application.
+     */
+    @Query("SELECT COUNT(la) FROM LoanAccount la WHERE " +
+           "(la.lastInterestAppliedDate IS NULL" +
+           " OR la.lastInterestAppliedDate < :forDate)")
+    long countAccountsNeedingInterestApplication(@Param("forDate")LocalDate forDate);
+
 }
