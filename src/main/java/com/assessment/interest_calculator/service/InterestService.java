@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class InterestService {
         this.loanAccountRepository = loanAccountRepository;
         this.dayCountBasis = dayCountBasis;
         this.zoneId = ZoneId.of(zone);   
+        log.info("InterestService initialized with dayCountBasis={} and zoneId={}", dayCountBasis, zoneId);
             }
         
     
@@ -44,5 +46,12 @@ public class InterestService {
         private int failedAccounts;
         private BigDecimal totalInterestApplied; // Sum of interest applied across all accounts - suggested by copilot
         private long durationMs;
+    }
+
+    public InterestApplicationResult applyDailyInterest(LocalDate forDate) {
+        log.info("Starting daily interest application for date: {}", forDate);
+        long startTime = System.currentTimeMillis();
+        AtomicInteger successCount = new AtomicInteger(0); // Thread-safe counter for successful updates
+        AtomicInteger failureCount = new AtomicInteger(0); // Thread-safe counter for failed updates
     }
 }
