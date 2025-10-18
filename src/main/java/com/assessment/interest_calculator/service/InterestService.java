@@ -1,7 +1,9 @@
 package com.assessment.interest_calculator.service;
 
+import java.math.RoundingMode;
 import java.time.ZoneId;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.assessment.interest_calculator.repository.LoanAccountRepository;
@@ -17,7 +19,15 @@ public class InterestService {
 
     private static final int BATCH_SIZE = 100; // Batch size for processing loan accounts
     private static final int MONEY_SCALE = 6; // Scale for monetary calculations
-    
 
+
+    public InterestService(
+            LoanAccountRepository loanAccountRepository,
+            @Value("${app.interest.dayCountBasis:365}") int dayCountBasis,
+            @Value("${app.interest.zone:Asia/Kolkata}") String zone) {
+        this.loanAccountRepository = loanAccountRepository;
+        this.dayCountBasis = dayCountBasis;
+        this.zoneId = ZoneId.of(zone);   
+    }
     
 }
