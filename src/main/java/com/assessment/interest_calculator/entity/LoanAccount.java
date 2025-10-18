@@ -39,7 +39,7 @@ public class LoanAccount {
     private BigDecimal interestRate;
 
     /**
-     * Accumlated interest amount
+     * Daily accrued interest amount (calculated and accumulated daily, transferred to principal at month-end)
      * Using NUMERIC(18,6) for higher precision in calculations.
      */
     @Column(name="interest_amount", nullable = false, precision = 18, scale = 6)
