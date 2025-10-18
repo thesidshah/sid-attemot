@@ -42,7 +42,7 @@ public class InterestService {
         private LocalDate date;
         private int totalAccountsProcessed;
         private int failedAccounts;
-        private BigDecimal totalInterestApplied;
+        private BigDecimal totalInterestApplied; // Sum of interest applied across all accounts - suggested by copilot
         private long durationMs;
     }
 }
