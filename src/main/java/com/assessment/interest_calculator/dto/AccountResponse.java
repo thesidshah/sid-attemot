@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AccountResponse {
-private Long id;
-private String name;
-private BigDecimal interestRate;
-private BigDecimal interestAmount;
-private BigDecimal principalAmount;
-private LocalDate dateOfDisbursal;
-private OffsetDateTime lastInterestAppliedAt;
-private Long version;
-private OffsetDateTime createdAt;
-private OffsetDateTime updatedAt;    
+    private Long id;
+    private String accountHolderName;
+    private BigDecimal interestRate;
+    private BigDecimal interestAmount;
+    private BigDecimal principalAmount;
+    private LocalDate dateOfDisbursal;
+    private OffsetDateTime lastInterestAppliedAt;
+    private Long version;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
