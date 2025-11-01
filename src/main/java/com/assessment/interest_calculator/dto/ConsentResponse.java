@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConsetResponse {
+public class ConsentResponse {
     @JsonProperty("gateway_token_id")
     private String gatewayTokenId;
 
