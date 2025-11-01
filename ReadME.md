@@ -184,3 +184,9 @@ Compliance with functional and technical standards is verified
 This phase is mandatory and helps ensure smooth operations before moving to the live (production) environment.
 ```
 
+Steps used to generate private and public keys:
+
+```bash
+openssl genpkey -algorithm RSA -out src/main/resources/keys/private.pem -pkeyopt rsa_keygen_bits:4096
+openssl pkey -in src/main/resources/keys/private.pem -pubout -out src/main/resources/keys/public.pem
+```
