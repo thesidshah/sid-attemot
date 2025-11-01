@@ -71,6 +71,13 @@ public class ConsentRequest {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
+    @Column(name = "customer_message")
+    private String customerMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "customer_notification_mode")
+    private NotificationMode customerNotificationMode;
+    
     @Column(name="notify_customer", nullable = false)
     @Builder.Default
     private boolean notifyCustomer = true;
@@ -93,6 +100,11 @@ public class ConsentRequest {
         REJECTED,
         EXPIRED,
         DATA_FETCHED
+    }
+
+    public enum NotificationMode {
+        WHATSAPP,
+        SMS
     }
 }
 
