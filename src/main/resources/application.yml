@@ -1,0 +1,59 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+
+spring:
+  application:
+    name: interest-calculator
+
+  datasource:
+    url: jdbc:postgresql://db:5432/interest_db
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 1000
+        order_inserts: true
+        order_updates: true
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+# Application-specific configuration
+app:
+  interest:
+    # Cron expression: runs at 11:59 PM daily (can be changed for demo)
+    cron: "0 59 23 * * *"
+    # Timezone for scheduling
+    zone: "Asia/Kolkata"
+    # Day count basis for interest calculation (365 or 360)
+    dayCountBasis: 365
+
+# Actuator endpoints for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Logging configuration
+logging:
+  level:
+    com.assessment.interest_calculator: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
