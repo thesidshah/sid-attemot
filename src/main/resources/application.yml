@@ -30,12 +30,13 @@ spring:
     time-zone: UTC
     serialization:
       write-dates-as-timestamps: false
-      
+
 digio:
   aa:
     base-url: ${DIGIO_BASE_URL:https://sandbox.digio.in/api}
     api-key: ${DIGIO_API_KEY:your-api-key-here}
     api-secret: ${DIGIO_API_SECRET:your-secret-here}
+    template-id: ${DIGIO_TEMPLATE_ID:your-template-id-here}
 
 # Application-specific configuration
 app:
