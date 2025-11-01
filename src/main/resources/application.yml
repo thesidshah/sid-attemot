@@ -7,9 +7,9 @@ spring:
     name: interest-calculator
 
   datasource:
-    url: jdbc:postgresql://db:5432/interest_db
-    username: user
-    password: password
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/interest_calculator}
+    username:  ${DATABASE_USERNAME:user}
+    password:  ${DATABASE_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -30,6 +30,12 @@ spring:
     time-zone: UTC
     serialization:
       write-dates-as-timestamps: false
+      
+digio:
+  aa:
+    base-url: ${DIGIO_BASE_URL:https://sandbox.digio.in/api}
+    api-key: ${DIGIO_API_KEY:your-api-key-here}
+    api-secret: ${DIGIO_API_SECRET:your-secret-here}
 
 # Application-specific configuration
 app:
