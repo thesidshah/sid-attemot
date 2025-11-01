@@ -37,6 +37,10 @@ digio:
     api-key: ${DIGIO_API_KEY:your-api-key-here}
     api-secret: ${DIGIO_API_SECRET:your-secret-here}
     template-id: ${DIGIO_TEMPLATE_ID:your-template-id-here}
+    webhook-base-url: ${DIGIO_WEBHOOK_BASE_URL:http://localhost:8080}
+    public-key-path: classpath:keys/public-key.pem
+    private-key-path: classpath:keys/private-key.pem
+
 
 # Application-specific configuration
 app:

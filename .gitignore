@@ -37,3 +37,6 @@ build/
 *.local
 application-*.yml
 secrets.yml
+
+### Secret keys for Digio integration ###
+src/main/resources/keys/private-key.pem
