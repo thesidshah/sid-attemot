@@ -40,3 +40,8 @@ secrets.yml
 
 ### Secret keys for Digio integration ###
 src/main/resources/keys/*.pem
+
+consent-request.sh
+output-consent-request.json
+consent-request-status.sh
+consent-request-status.html

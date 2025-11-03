@@ -190,3 +190,13 @@ Steps used to generate private and public keys:
 openssl genpkey -algorithm RSA -out src/main/resources/keys/private.pem -pkeyopt rsa_keygen_bits:4096
 openssl pkey -in src/main/resources/keys/private.pem -pubout -out src/main/resources/keys/public.pem
 ```
+
+I have some interesting observations based on comparisions of what I saw in an expected bash script vs the one I created.
+
+- The customer_identifier stayed the same. 
+- The Authorization Client ID and Secret I had were all capital letters and the curl script has a more relatable variation. 
+- The customer_ref_id changes in the response. 
+- The response also returned further details - template_name for example.
+- The customer_id was empty in the request and there was no 'id' field provided, but the response had one.
+
+I will create a list of bash scripts that emulate consent request notification, acceptance, FI data request, and collection next. Had started off towards creating actual database structures using the documentation to log all requests in relevant tables (in a bid to make it easier to track - current number of request notifications and checking on their status and statistics.)
