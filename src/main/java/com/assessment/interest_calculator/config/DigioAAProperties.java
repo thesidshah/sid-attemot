@@ -14,6 +14,7 @@ public class DigioAAProperties {
     private String apiSecret;
     private String templateId;
     private String webhookBaseUrl;
+    private String gatewayBaseUrl;
     private String publicKeyPath;
     private String privateKeyPath;
 }

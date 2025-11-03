@@ -25,8 +25,11 @@ public class ConsentRequest {
     @JoinColumn(name = "loan_account_id", nullable = false)
     private LoanAccount loanAccount;
     
-    @Column(name = "consent_handle", unique = true)
-    private String consentHandle;
+    @Column(name = "consent_request_id", unique = true)
+    private String consentRequestId;
+
+    @Column(name = "gateway_token_id")
+    private String gatewayTokenId;
     
     @Column(name = "customer_ref_id", nullable = false, unique = true)
     private String customerRefId;
@@ -53,7 +56,16 @@ public class ConsentRequest {
     
     @Column(name = "fi_end_date")
     private LocalDate fiEndDate;
-    
+
+    @Column(name = "fi_request_id")
+    private String fiRequestId;
+
+    @Column(name = "fi_request_status")
+    private String fiRequestStatus;
+
+    @Column(name = "fi_requested_at")
+    private OffsetDateTime fiRequestedAt;
+
     @Column(name = "approved_at")
     private OffsetDateTime approvedAt;
     

@@ -40,3 +40,6 @@ secrets.yml
 
 ### Secret keys for Digio integration ###
 src/main/resources/keys/*.pem
+
+### Shell scripts ###
+post-request-bash-try.sh
