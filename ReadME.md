@@ -200,3 +200,10 @@ I have some interesting observations based on comparisions of what I saw in an e
 - The customer_id was empty in the request and there was no 'id' field provided, but the response had one.
 
 I will create a list of bash scripts that emulate consent request notification, acceptance, FI data request, and collection next. Had started off towards creating actual database structures using the documentation to log all requests in relevant tables (in a bid to make it easier to track - current number of request notifications and checking on their status and statistics.)
+
+Focusing on two of the four API requests for now. If time permits, I will continue building on the third one.
+To reiterate this means:
+- [Request Consent Using Consent Template](https://documentation.digio.in/fiu-tsp/api-integration/consent-template/)
+- [Retrieving Status and Details of Consent Requests](https://documentation.digio.in/fiu-tsp/api-integration/retrieve-status/)
+- [List Fi Request By Consent Request Id](https://documentation.digio.in/fiu-tsp/api-integration/list_fi_request/)
+
