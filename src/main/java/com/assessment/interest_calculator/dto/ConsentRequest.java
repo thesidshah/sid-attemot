@@ -35,6 +35,9 @@ public static class CustomerDetails {
     @JsonProperty("customer_mobile")
     private String customerMobile;
 
+    /**
+     * This identifier should match with the mode of communication preferred by the customer.
+     */
     @JsonProperty("customer_identifier")
     private String customerIdentifier;
 }
@@ -66,6 +69,7 @@ public static class ConsentData {
 @NoArgsConstructor
 @AllArgsConstructor
 public static class FiSchedule {
+     //TODO: Not implemented yet
     @JsonProperty("daily_frequency_meta")
     private DailyFrequencyMeta dailyFrequencyMeta;
 }
