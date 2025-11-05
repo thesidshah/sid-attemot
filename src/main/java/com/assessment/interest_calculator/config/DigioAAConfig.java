@@ -21,8 +21,7 @@ public class DigioAAConfig {
         return WebClient.builder()
                 .baseUrl(properties.getBaseUrl())
                 .defaultHeader("accept", "application/json") // Did not include content-type as this will vary based on request
-                .defaultHeader("client_id", properties.getApiKey())
-                .defaultHeader("client_secret", properties.getApiSecret())
+                .defaultHeader("Authorization", "Basic " + properties.getApiKey())
                 .build();
     }
 
