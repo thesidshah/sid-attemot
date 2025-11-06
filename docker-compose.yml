@@ -20,6 +20,7 @@ services:
     depends_on:
       - db
     environment:
+      - SPRING_PROFILES_ACTIVE=local
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/interest_db
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
