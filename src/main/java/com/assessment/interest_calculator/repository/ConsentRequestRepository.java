@@ -22,7 +22,7 @@ public interface ConsentRequestRepository extends JpaRepository<ConsentRequest, 
      * Find a ConsentRequest by customer reference ID. This will not be using the third party APIs but the database lookup.
      */
     @Query("SELECT cr FROM ConsentRequest cr WHERE cr.customerRefId = :customerRefId")
-    Optional<ConsentRequest> findByCustomerRefId(String customerRefId);
+    Optional<ConsentRequest> findByCustomerRefId(String customerRefId); //TODO: Fix this - it is using customerRefId instead of requestId
 
     /**
      * TODO: Implement this if FI is collected.
