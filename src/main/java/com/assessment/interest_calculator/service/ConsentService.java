@@ -207,8 +207,8 @@ public class ConsentService {
 
             // Allow dates from start of today (IST) onwards to accommodate timezone differences
             OffsetDateTime startOfTodayIST = LocalDate.now(IST_ZONE).atStartOfDay(IST_ZONE).toOffsetDateTime();
-            if (consentStart.isBefore(startOfTodayIST)) {
-                throw new IllegalArgumentException("Consent start date cannot be before today (IST)");
+            if (consentStart.isAfter(startOfTodayIST)) {
+                throw new IllegalArgumentException("Consent start date cannot be after today (IST)");
             }
 
             //TODO: This validation can handle more means of communication in future
