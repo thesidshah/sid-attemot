@@ -1,7 +1,5 @@
 package com.assessment.interest_calculator.dto;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -17,72 +15,61 @@ public class ConsentRequest {
     @JsonProperty("customer_details")
     private CustomerDetails customerDetails;
 
-    
+    @JsonProperty("customer_notification_mode")
+    private String customerNotificationMode;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public static class CustomerDetails {
-    @JsonProperty("customer_name")
-    private String customerName;
+    @JsonProperty("template_id")
+    private String templateId;
 
-    @JsonProperty("customer_email")
-    private String customerEmail;
+    @JsonProperty("customer_id")
+    private String customerId;
 
-    @JsonProperty("customer_ref_id")
-    private String customerRefId;
-
-    @JsonProperty("customer_mobile")
-    private String customerMobile;
-
-    /**
-     * This identifier should match with the mode of communication preferred by the customer.
-     */
-    @JsonProperty("customer_identifier")
-    private String customerIdentifier;
-}
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public static class ConsentData {
-    @JsonProperty("fip_ids")
-    private List<String> fipIds;
-
-    @JsonProperty("email_id")
-    private String emailId;
-
-    @JsonProperty("pan")
-    private String pan;
-
-    @JsonProperty("dob")
-    private String dob;
-
-    @JsonProperty("show_consent_info")
+    @JsonProperty("notify_customer")
     @Builder.Default
-    private boolean showConsentInfo = true;
-}
+    private boolean notifyCustomer = true;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public static class FiSchedule {
-     //TODO: Not implemented yet
-    @JsonProperty("daily_frequency_meta")
-    private DailyFrequencyMeta dailyFrequencyMeta;
-}
+    @JsonProperty("consent_details")
+    private ConsentDetails consentDetails;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public static class DailyFrequencyMeta {
-    @JsonProperty("fi_request_time")
-    private String fiRequestTime;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CustomerDetails {
+        @JsonProperty("customer_name")
+        private String customerName;
 
-    @JsonProperty("fetch_on_week_days_only")
-    private boolean fetchOnWeekDaysOnly;
-}
+        @JsonProperty("customer_email")
+        private String customerEmail;
+
+        @JsonProperty("customer_ref_id")
+        private String customerRefId;
+
+        @JsonProperty("customer_mobile")
+        private String customerMobile;
+
+        /**
+         * This identifier should match with the mode of communication preferred by the customer.
+         */
+        @JsonProperty("customer_identifier")
+        private String customerIdentifier;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ConsentDetails {
+        @JsonProperty("fi_start_date")
+        private String fiStartDate;
+
+        @JsonProperty("fi_end_date")
+        private String fiEndDate;
+
+        @JsonProperty("consent_expiry_date")
+        private String consentExpiryDate;
+
+        @JsonProperty("consent_start_date")
+        private String consentStartDate;
+    }
 }
