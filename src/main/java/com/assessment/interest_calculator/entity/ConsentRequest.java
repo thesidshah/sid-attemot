@@ -71,7 +71,19 @@ public class ConsentRequest {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @Column(name = "customer_message")
+    @Column(name="customer_identifier")
+    private String customerIdentifier;
+
+    @Column(name="customer_name")
+    private String customerName;
+
+    @Column(name="customer_email", nullable = true)
+    private String customerEmail;
+
+    @Column(name="customer_mobile", nullable = true)
+    private String customerMobile;
+
+    @Column(name = "customer_message", nullable = true)
     private String customerMessage;
 
     @Enumerated(EnumType.STRING)
