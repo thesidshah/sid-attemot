@@ -14,24 +14,48 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ConsentResponse {
+    @JsonProperty("consent_request_id")
+    private String consentRequestId;
+
+    @JsonProperty("customer_details")
+    private CustomerDetails customerDetails;
+
+    @JsonProperty("status")
+    private String status;
+
+    @JsonProperty("consent_details")
+    private ConsentDetails consentDetails;
+
+    @JsonProperty("data_frequency_value")
+    private Integer dataFrequencyValue;
+
+    @JsonProperty("data_frequency_unit")
+    private String dataFrequencyUnit;
+
+    @JsonProperty("created_at")
+    private String createdAt;
+
+    @JsonProperty("consent_expire_date")
+    private String consentExpireDate;
+
+    @JsonProperty("request_expire_date")
+    private String requestExpireDate;
+
+    @JsonProperty("template_name")
+    private String templateName;
+
+    @JsonProperty("template_id")
+    private String templateId;
+
+    @JsonProperty("aa_id")
+    private String aaId;
+
+    @JsonProperty("require_analytics")
+    private boolean requireAnalytics;
+
     @JsonProperty("gateway_token_id")
     private String gatewayTokenId;
 
-    @JsonProperty("consent_request_id")
-    private String consentRequestId;
-    
-    @JsonProperty("customer_details")
-    private CustomerDetails customerDetails;
-    
-    @JsonProperty("status")
-    private String status;
-    
-    @JsonProperty("consent_details")
-    private ConsentDetails consentDetails;
-    
-    @JsonProperty("request_expire_date")
-    private String requestExpireDate;
-    
     @JsonProperty("fi_schedule")
     private FiSchedule fiSchedule;
     
