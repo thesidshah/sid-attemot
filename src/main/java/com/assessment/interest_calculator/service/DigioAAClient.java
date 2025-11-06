@@ -8,6 +8,7 @@ import com.assessment.interest_calculator.config.DigioAAProperties;
 import com.assessment.interest_calculator.dto.ConsentRequestDTO;
 import com.assessment.interest_calculator.dto.ConsentResponseDTO;
 import com.assessment.interest_calculator.dto.DigioErrorResponseDTO;
+import com.assessment.interest_calculator.dto.ConsentResponseDTO.ConsentDetails;
 import com.assessment.interest_calculator.exception.DigioAAException;
 
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,30 @@ public class DigioAAClient {
                 .doOnSuccess(response -> log.info("Received consent response for customerRefId: {}", consentRequest.getCustomerDetails().getCustomerRefId()))
                 .doOnError(error -> log.error("Error while making consent request for customerRefId: {}", consentRequest.getCustomerDetails().getCustomerRefId(), error));
     }
+
+    public Mono<ConsentDetails> getConsentDetails(String consentHandle) {
+        log.info("Fetching consent details from Digio AA for consentHandle: {}", consentHandle);
+        return digioWebClient.get()
+                .uri("/fiu_api/client/consent/request/{consentHandle}/details", consentHandle)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response ->
+                    response.bodyToMono(DigioErrorResponseDTO.class)
+                        .flatMap(error -> {
+                            log.error("Digio AA error - Code: {}, Message: {}, Details: {}",
+                                error.getErrorCode(), error.getErrorMsg(), error.getDetails());
+                            return Mono.error(new DigioAAException(
+                                error.getErrorMsg(),
+                                error.getErrorCode(),
+                                error.getDetails(),
+                                error.getVer()
+                            ));
+                        })
+                )
+                .bodyToMono(ConsentResponseDTO.class)
+                .map(ConsentResponseDTO::getConsentDetails)
+                .doOnSuccess(details -> log.info("Fetched consent details for consentHandle: {}", consentHandle))
+                .doOnError(error -> log.error("Error while fetching consent details for consentHandle: {}", consentHandle, error));
+    }
+
     
 }
