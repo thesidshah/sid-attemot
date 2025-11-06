@@ -44,4 +44,4 @@ src/main/resources/keys/*.pem
 consent-request.sh
 output-consent-request.json
 consent-request-status.sh
-consent-request-status.html
+consent-request-status.json
