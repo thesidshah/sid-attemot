@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConsentResponse {
+public class ConsentResponseDTO {
     @JsonProperty("consent_request_id")
     private String consentRequestId;
 

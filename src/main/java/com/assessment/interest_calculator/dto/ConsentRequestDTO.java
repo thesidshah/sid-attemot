@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConsentRequest {
+public class ConsentRequestDTO {
     @JsonProperty("customer_details")
     private CustomerDetails customerDetails;
 
