@@ -207,3 +207,8 @@ To reiterate this means:
 - [Retrieving Status and Details of Consent Requests](https://documentation.digio.in/fiu-tsp/api-integration/retrieve-status/)
 - [List Fi Request By Consent Request Id](https://documentation.digio.in/fiu-tsp/api-integration/list_fi_request/)
 
+### Phase 1 
+- Web client => Digio bean configured.
+- DigioAAProperties => Externalized properties (prefix digio.aa)
+- 
+
