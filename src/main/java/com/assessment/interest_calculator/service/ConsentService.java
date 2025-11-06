@@ -22,4 +22,10 @@ public class ConsentService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
+    /**
+     * Initiate a consent requeest for a potential customer.
+     * 
+     */
+
+
 }
