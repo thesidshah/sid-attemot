@@ -14,15 +14,14 @@ import com.assessment.interest_calculator.entity.ConsentRequest;
 @Repository
 public interface ConsentRequestRepository extends JpaRepository<ConsentRequest, Long> {
     /**
-     * Find a ConsentRequest for its status by its unique requestId.
-     */
-    Optional<ConsentRequest> findByRequestId(String requestId);
-
-    /**
      * Find a ConsentRequest by customer reference ID. This will not be using the third party APIs but the database lookup.
      */
     @Query("SELECT cr FROM ConsentRequest cr WHERE cr.customerRefId = :customerRefId")
-    Optional<ConsentRequest> findByCustomerRefId(String customerRefId); //TODO: Fix this - it is using customerRefId instead of requestId
+    Optional<ConsentRequest> findByCustomerRefId(String customerRefId); 
+    /**
+     * Find a ConsentRequest by consent handle (received from Digio AA).
+     */
+    Optional<ConsentRequest> findByConsentHandle(String consentHandle);
 
     /**
      * TODO: Implement this if FI is collected.

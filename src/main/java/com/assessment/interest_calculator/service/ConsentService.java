@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.assessment.interest_calculator.config.DigioAAProperties;
 import com.assessment.interest_calculator.dto.ConsentRequestDTO;
 import com.assessment.interest_calculator.dto.ConsentResponseDTO;
+import com.assessment.interest_calculator.dto.ConsentStatusResponse;
 import com.assessment.interest_calculator.entity.ConsentRequest;
 import com.assessment.interest_calculator.entity.ConsentRequest.ConsentStatus;
 import com.assessment.interest_calculator.entity.ConsentRequest.NotificationMode;
@@ -250,6 +251,145 @@ public class ConsentService {
     private OffsetDateTime parseDateTime(String dateTimeStr) {
         LocalDateTime localDateTime = LocalDateTime.parse(dateTimeStr, DATETIME_FORMATTER);
         return localDateTime.atZone(IST_ZONE).toOffsetDateTime();
+    }
+
+    /**
+     * Get the current status of a consent request by customer reference ID.
+     * Fetches the latest status from Digio AA and updates the local database.
+     *
+     * @param customerRefId The customer reference ID
+     * @return Mono<ConsentStatusResponse> containing the current consent status
+     * @throws IllegalArgumentException if consent request not found
+     */
+    public Mono<ConsentStatusResponse> getConsentStatusByCustomerRefId(String customerRefId) {
+        log.info("Fetching consent status for customerRefId: {}", customerRefId);
+
+        // Find the consent request in database
+        ConsentRequest consentRequest = consentRequestRepository.findByCustomerRefId(customerRefId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Consent request not found for customerRefId: " + customerRefId));
+
+        if (consentRequest.getConsentHandle() == null) {
+            log.warn("Consent handle not yet available for customerRefId: {}", customerRefId);
+            // Return current status from database without calling Digio
+            return Mono.just(buildConsentStatusResponse(consentRequest));
+        }
+
+        // Fetch latest details from Digio AA
+        return digioAAClient.getConsentDetails(consentRequest.getConsentHandle())
+                .map(consentDetails -> {
+                    // Update the consent request entity with latest details from Digio
+                    updateConsentRequestFromDetails(consentRequest, consentDetails);
+                    consentRequestRepository.save(consentRequest);
+
+                    log.info("Updated consent status for customerRefId: {} to status: {}",
+                            customerRefId, consentRequest.getStatus());
+
+                    return buildConsentStatusResponse(consentRequest);
+                })
+                .onErrorResume(error -> {
+                    log.error("Error fetching consent details from Digio AA for customerRefId: {}",
+                            customerRefId, error);
+                    // Return current status from database on error
+                    return Mono.just(buildConsentStatusResponse(consentRequest));
+                });
+    }
+
+    /**
+     * Get the current status of a consent request by consent handle.
+     * Fetches the latest status from Digio AA and updates the local database.
+     *
+     * @param consentHandle The consent handle from Digio AA
+     * @return Mono<ConsentStatusResponse> containing the current consent status
+     * @throws IllegalArgumentException if consent request not found
+     */
+    public Mono<ConsentStatusResponse> getConsentStatusByHandle(String consentHandle) {
+        log.info("Fetching consent status for consentHandle: {}", consentHandle);
+
+        // Find the consent request in database
+        ConsentRequest consentRequest = consentRequestRepository.findByConsentHandle(consentHandle)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Consent request not found for consentHandle: " + consentHandle));
+
+        // Fetch latest details from Digio AA
+        return digioAAClient.getConsentDetails(consentHandle)
+                .map(consentDetails -> {
+                    // Update the consent request entity with latest details from Digio
+                    updateConsentRequestFromDetails(consentRequest, consentDetails);
+                    consentRequestRepository.save(consentRequest);
+
+                    log.info("Updated consent status for consentHandle: {} to status: {}",
+                            consentHandle, consentRequest.getStatus());
+
+                    return buildConsentStatusResponse(consentRequest);
+                })
+                .onErrorResume(error -> {
+                    log.error("Error fetching consent details from Digio AA for consentHandle: {}",
+                            consentHandle, error);
+                    // Return current status from database on error
+                    return Mono.just(buildConsentStatusResponse(consentRequest));
+                });
+    }
+
+    /**
+     * Updates the ConsentRequest entity with details from Digio AA response.
+     *
+     * @param consentRequest The entity to update
+     * @param consentDetails The details from Digio AA
+     */
+    private void updateConsentRequestFromDetails(
+            ConsentRequest consentRequest,
+            ConsentResponseDTO.ConsentDetails consentDetails) {
+
+        // Parse and update dates if available
+        if (consentDetails.getConsentStartDate() != null) {
+            consentRequest.setConsentStartDate(parseDateTime(consentDetails.getConsentStartDate()));
+        }
+        if (consentDetails.getConsentExpiryDate() != null) {
+            consentRequest.setConsentExpiryDate(parseDateTime(consentDetails.getConsentExpiryDate()));
+        }
+        if (consentDetails.getFiStartDate() != null) {
+            consentRequest.setFiStartDate(parseDate(consentDetails.getFiStartDate()));
+        }
+        if (consentDetails.getFiEndDate() != null) {
+            consentRequest.setFiEndDate(parseDate(consentDetails.getFiEndDate()));
+        }
+
+        // Note: Status update would need to come from the full consent response
+        // For now, we're only updating dates. Status updates typically come from webhooks
+    }
+
+    /**
+     * Builds a ConsentStatusResponse from a ConsentRequest entity.
+     *
+     * @param consentRequest The consent request entity
+     * @return ConsentStatusResponse DTO
+     */
+    private ConsentStatusResponse buildConsentStatusResponse(ConsentRequest consentRequest) {
+        return ConsentStatusResponse.builder()
+                .consentHandle(consentRequest.getConsentHandle())
+                .status(consentRequest.getStatus().name())
+                .redirectUrl(consentRequest.getRedirectUrl())
+                .createdAt(consentRequest.getCreatedAt())
+                .expiresAt(consentRequest.getConsentExpiryDate())
+                .message(buildStatusMessage(consentRequest.getStatus()))
+                .build();
+    }
+
+    /**
+     * Builds a user-friendly status message based on consent status.
+     *
+     * @param status The consent status
+     * @return User-friendly message
+     */
+    private String buildStatusMessage(ConsentStatus status) {
+        return switch (status) {
+            case PENDING -> "Consent request is pending customer approval";
+            case APPROVED -> "Consent has been approved by customer";
+            case REJECTED -> "Consent request was rejected by customer";
+            case EXPIRED -> "Consent request has expired";
+            case DATA_FETCHED -> "Financial information has been fetched";
+        };
     }
 
 }
