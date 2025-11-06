@@ -6,6 +6,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import com.assessment.interest_calculator.entity.ConsentRequest.ConsentStatus;
 import com.assessment.interest_calculator.entity.ConsentRequest.NotificationMode;
 import com.assessment.interest_calculator.repository.ConsentRequestRepository;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -28,6 +32,7 @@ public class ConsentService {
     private final DigioAAClient digioAAClient;
     private final ConsentRequestRepository consentRequestRepository;
     private final DigioAAProperties digioAAProperties;
+    private final Validator validator;
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -39,7 +44,7 @@ public class ConsentService {
      * This is the preferred method with built-in validation.
      *
      * @param requestDTO ConsentRequestDTO object containing all required details
-     * @param notificationMode Mode of notification (SMS or WHATSAPP)
+     * @param notificationMode Mode of notification (SMS / WHATSAPP or EMAIL)
      * @return Mono<ConsentResponseDTO> containing the consent request response
      * @throws IllegalArgumentException if validation fails
      */
@@ -174,7 +179,16 @@ public class ConsentService {
      * @throws IllegalArgumentException if validation fails
      */
     private void validateConsentRequest(ConsentRequestDTO requestDTO, NotificationMode notificationMode) {
-        // Validate date formats
+        // Validate using Jakarta Validation annotations
+        Set<ConstraintViolation<ConsentRequestDTO>> violations = validator.validate(requestDTO);
+        if (!violations.isEmpty()) {
+            String errorMessage = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("Validation failed: " + errorMessage);
+        }
+
+        // Validate date formats and business logic
         try {
             LocalDate fiStart = parseDate(requestDTO.getConsentDetails().getFiStartDate());
             LocalDate fiEnd = parseDate(requestDTO.getConsentDetails().getFiEndDate());
@@ -194,12 +208,20 @@ public class ConsentService {
                 throw new IllegalArgumentException("Consent start date cannot be in the past");
             }
 
+            //TODO: This validation can handle more means of communication in future
             // Validate customer identifier matches notification mode
             if (notificationMode == NotificationMode.SMS) {
                 if (!requestDTO.getCustomerDetails().getCustomerIdentifier()
                         .equals(requestDTO.getCustomerDetails().getCustomerMobile())) {
                     throw new IllegalArgumentException(
                         "Customer identifier must match mobile number for SMS notification mode");
+                }
+            }
+            else {
+                if(!requestDTO.getCustomerDetails().getCustomerIdentifier()
+                        .equals(requestDTO.getCustomerDetails().getCustomerEmail())) {
+                    throw new IllegalArgumentException(
+                        "Customer identifier must match email address for email notification mode");
                 }
             }
 

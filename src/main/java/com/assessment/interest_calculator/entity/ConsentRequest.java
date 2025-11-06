@@ -115,7 +115,7 @@ public class ConsentRequest {
     }
 
     public enum NotificationMode {
-        WHATSAPP,
+        EMAIL,
         SMS
     }
 }
