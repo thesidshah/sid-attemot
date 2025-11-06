@@ -1,8 +1,11 @@
 package com.assessment.interest_calculator.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.springframework.stereotype.Service;
 
@@ -28,7 +31,42 @@ public class ConsentService {
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
 
+
+    /**
+     * Initiate a consent request for a potential customer using a ConsentRequestDTO object.
+     * This is the preferred method with built-in validation.
+     *
+     * @param requestDTO ConsentRequestDTO object containing all required details
+     * @param notificationMode Mode of notification (SMS or WHATSAPP)
+     * @return Mono<ConsentResponseDTO> containing the consent request response
+     * @throws IllegalArgumentException if validation fails
+     */
+    public Mono<ConsentResponseDTO> initiateConsentRequest(
+            ConsentRequestDTO requestDTO,
+            NotificationMode notificationMode) {
+
+        log.info("Initiating consent request for customer: {}, refId: {}",
+                requestDTO.getCustomerDetails().getCustomerName(),
+                requestDTO.getCustomerDetails().getCustomerRefId());
+
+        // Validate date formats and business logic
+        validateConsentRequest(requestDTO, notificationMode);
+
+        return initiateConsentRequest(
+                requestDTO.getCustomerDetails().getCustomerName(),
+                requestDTO.getCustomerDetails().getCustomerEmail(),
+                requestDTO.getCustomerDetails().getCustomerMobile(),
+                requestDTO.getCustomerDetails().getCustomerRefId(),
+                requestDTO.getCustomerDetails().getCustomerIdentifier(),
+                requestDTO.getConsentDetails().getFiStartDate(),
+                requestDTO.getConsentDetails().getFiEndDate(),
+                requestDTO.getConsentDetails().getConsentStartDate(),
+                requestDTO.getConsentDetails().getConsentExpiryDate(),
+                notificationMode
+        );
+    }
 
     /**
      * Initiate a consent request for a potential customer.
@@ -39,10 +77,10 @@ public class ConsentService {
      * @param customerMobile Customer's mobile number
      * @param customerRefId Unique reference ID for the customer
      * @param customerIdentifier Customer identifier (should match notification mode - mobile or email)
-     * @param fiStartDate Start date for financial information period (format: yyyy-MM-dd HH:mm:ss)
-     * @param fiEndDate End date for financial information period (format: yyyy-MM-dd HH:mm:ss)
-     * @param consentStartDate Start date for consent validity (format: yyyy-MM-dd HH:mm:ss)
-     * @param consentExpiryDate Expiry date for consent (format: yyyy-MM-dd HH:mm:ss)
+     * @param fiStartDate Start date for financial information period (format: yyyy-MM-dd HH:mm:ss in IST)
+     * @param fiEndDate End date for financial information period (format: yyyy-MM-dd HH:mm:ss in IST)
+     * @param consentStartDate Start date for consent validity (format: yyyy-MM-dd HH:mm:ss in IST)
+     * @param consentExpiryDate Expiry date for consent (format: yyyy-MM-dd HH:mm:ss in IST)
      * @param notificationMode Mode of notification (SMS or WHATSAPP)
      * @return Mono<ConsentResponseDTO> containing the consent request response
      */
@@ -87,6 +125,12 @@ public class ConsentService {
                 .customerNotificationMode(notificationMode.name())
                 .build();
 
+        // Parse dates with IST timezone
+        LocalDate fiStart = parseDate(fiStartDate);
+        LocalDate fiEnd = parseDate(fiEndDate);
+        OffsetDateTime consentStart = parseDateTime(consentStartDate);
+        OffsetDateTime consentExpiry = parseDateTime(consentExpiryDate);
+
         // Save initial consent request entity to database
         ConsentRequest consentRequest = ConsentRequest.builder()
                 .customerRefId(customerRefId)
@@ -98,10 +142,10 @@ public class ConsentService {
                 .status(ConsentStatus.PENDING)
                 .customerNotificationMode(notificationMode)
                 .notifyCustomer(true)
-                .fiStartDate(LocalDate.parse(fiStartDate.split(" ")[0], DATE_FORMATTER))
-                .fiEndDate(LocalDate.parse(fiEndDate.split(" ")[0], DATE_FORMATTER))
-                .consentStartDate(OffsetDateTime.parse(consentStartDate.replace(" ", "T") + "+00:00"))
-                .consentExpiryDate(OffsetDateTime.parse(consentExpiryDate.replace(" ", "T") + "+00:00"))
+                .fiStartDate(fiStart)
+                .fiEndDate(fiEnd)
+                .consentStartDate(consentStart)
+                .consentExpiryDate(consentExpiry)
                 .build();
 
         ConsentRequest savedRequest = consentRequestRepository.save(consentRequest);
@@ -120,6 +164,70 @@ public class ConsentService {
                     log.error("Failed to create consent request for customerRefId: {}", customerRefId, error);
                     // Optionally update status to REJECTED or handle error state
                 });
+    }
+
+    /**
+     * Validates the consent request for date format and business logic.
+     *
+     * @param requestDTO The consent request DTO to validate
+     * @param notificationMode The notification mode
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateConsentRequest(ConsentRequestDTO requestDTO, NotificationMode notificationMode) {
+        // Validate date formats
+        try {
+            LocalDate fiStart = parseDate(requestDTO.getConsentDetails().getFiStartDate());
+            LocalDate fiEnd = parseDate(requestDTO.getConsentDetails().getFiEndDate());
+            OffsetDateTime consentStart = parseDateTime(requestDTO.getConsentDetails().getConsentStartDate());
+            OffsetDateTime consentExpiry = parseDateTime(requestDTO.getConsentDetails().getConsentExpiryDate());
+
+            // Business logic validations
+            if (fiEnd.isBefore(fiStart)) {
+                throw new IllegalArgumentException("FI end date must be after FI start date");
+            }
+
+            if (consentExpiry.isBefore(consentStart)) {
+                throw new IllegalArgumentException("Consent expiry date must be after consent start date");
+            }
+
+            if (consentStart.isBefore(OffsetDateTime.now(IST_ZONE))) {
+                throw new IllegalArgumentException("Consent start date cannot be in the past");
+            }
+
+            // Validate customer identifier matches notification mode
+            if (notificationMode == NotificationMode.SMS) {
+                if (!requestDTO.getCustomerDetails().getCustomerIdentifier()
+                        .equals(requestDTO.getCustomerDetails().getCustomerMobile())) {
+                    throw new IllegalArgumentException(
+                        "Customer identifier must match mobile number for SMS notification mode");
+                }
+            }
+
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Expected format: yyyy-MM-dd HH:mm:ss", e);
+        }
+    }
+
+    /**
+     * Parses date string in format "yyyy-MM-dd HH:mm:ss" to LocalDate.
+     *
+     * @param dateTimeStr Date time string in IST
+     * @return LocalDate parsed from the string
+     */
+    private LocalDate parseDate(String dateTimeStr) {
+        String datePart = dateTimeStr.split(" ")[0];
+        return LocalDate.parse(datePart, DATE_FORMATTER);
+    }
+
+    /**
+     * Parses date time string in format "yyyy-MM-dd HH:mm:ss" to OffsetDateTime in IST.
+     *
+     * @param dateTimeStr Date time string in IST
+     * @return OffsetDateTime with IST timezone
+     */
+    private OffsetDateTime parseDateTime(String dateTimeStr) {
+        LocalDateTime localDateTime = LocalDateTime.parse(dateTimeStr, DATETIME_FORMATTER);
+        return localDateTime.atZone(IST_ZONE).toOffsetDateTime();
     }
 
 }
