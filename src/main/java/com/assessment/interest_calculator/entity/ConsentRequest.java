@@ -20,10 +20,10 @@ public class ConsentRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loan_account_id", nullable = false)
-    private LoanAccount loanAccount;
+    // ConsentRequest is not linked to a loan account because it is a requirement to have the data to decide if a loan account can be created.
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "loan_account_id", nullable = false)
+    // private LoanAccount loanAccount;
     
     @Column(name = "consent_handle", unique = true)
     private String consentHandle;
