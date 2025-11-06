@@ -24,7 +24,7 @@ public class ConsentRequest {
 @AllArgsConstructor
 public static class CustomerDetails {
     @JsonProperty("customer_name")
-    private String custometName;
+    private String customerName;
 
     @JsonProperty("customer_email")
     private String customerEmail;
