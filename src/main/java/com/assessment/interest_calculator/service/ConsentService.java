@@ -206,10 +206,10 @@ public class ConsentService {
             }
 
             // Allow dates from start of today (IST) onwards to accommodate timezone differences
-            OffsetDateTime startOfTodayIST = LocalDate.now(IST_ZONE).atStartOfDay(IST_ZONE).toOffsetDateTime();
-            if (consentStart.isAfter(startOfTodayIST)) {
-                throw new IllegalArgumentException("Consent start date cannot be after today (IST)");
-            }
+            OffsetDateTime nowIST = OffsetDateTime.now(IST_ZONE);
+            if (consentStart.isAfter(nowIST)) {
+    throw new IllegalArgumentException("Consent start date cannot be in the future (IST)");
+}
 
             //TODO: This validation can handle more means of communication in future
             // Validate customer identifier matches notification mode
