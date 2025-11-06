@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.assessment.interest_calculator.dto.ErrorResponse;
 
@@ -89,6 +91,27 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorResponse);
+    }
+
+    /**
+     * Handle missing static resources and unmapped endpoints.
+     */
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            Exception ex,
+            WebRequest request) {
+
+        log.warn("Resource not found: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .error("Not Found")
+                .message("The requested resource could not be found.")
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     /**
