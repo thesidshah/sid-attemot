@@ -1,0 +1,70 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+
+spring:
+  application:
+    name: interest-calculator
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/interest_calculator}
+    username:  ${DATABASE_USERNAME:user}
+    password:  ${DATABASE_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 1000
+        order_inserts: true
+        order_updates: true
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+digio:
+  aa:
+    base-url: ${DIGIO_BASE_URL:https://sandbox.digio.in/api}
+    api-key: ${DIGIO_API_KEY:your-api-key-here}
+    api-secret: ${DIGIO_API_SECRET:your-secret-here}
+    template-id: ${DIGIO_TEMPLATE_ID:your-template-id-here}
+    webhook-base-url: ${DIGIO_WEBHOOK_BASE_URL:http://localhost:8080}
+    public-key-path: classpath:keys/public-key.pem
+    private-key-path: classpath:keys/private-key.pem
+
+
+# Application-specific configuration
+app:
+  interest:
+    # Cron expression: runs at 11:59 PM daily (can be changed for demo)
+    cron: "0 59 23 * * *"
+    # Timezone for scheduling
+    zone: "Asia/Kolkata"
+    # Day count basis for interest calculation (365 or 360)
+    dayCountBasis: 365
+
+# Actuator endpoints for health checks
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Logging configuration
+logging:
+  level:
+    com.assessment.interest_calculator: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

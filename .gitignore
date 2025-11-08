@@ -31,3 +31,17 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### API Keys and sensitive information ###
+*.env
+*.local
+application-*.yml
+secrets.yml
+
+### Secret keys for Digio integration ###
+src/main/resources/keys/*.pem
+
+consent-request.sh
+output-consent-request.json
+consent-request-status.sh
+consent-request-status.json

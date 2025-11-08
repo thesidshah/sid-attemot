@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Runtime stage
-FROM openjdk:17-jdk-slim
+FROM maven:3.9-eclipse-temurin-17 
 WORKDIR /app
 COPY --from=build /app/target/*.jar ./interest-calculator.jar
 EXPOSE 8080

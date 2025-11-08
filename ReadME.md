@@ -142,3 +142,73 @@ def solution(s: str) -> list[int]:
     return [0, 0]
 
 ```
+
+## Stage 3
+
+### Account Aggregators.
+**What is an account aggegator?**
+It is a regulatead digital entity (org) that helps FIUs (Financial Information Users) gather different vectors of financial data of their customers.
+
+I am integrating digio as the TSP (Technology Service Provider) for the purpose of account aggregator in my backend to manage consent and data collection of customers or loan applicants.
+
+**Sandbox Testing**: Testing integrations. I am not attempting to actually ship this code to production. My focus is on creating and testing those integrations in the sandbox that digio provides.
+
+
+Exerpt from the docs at digio. 
+```
+2. FIU Module Development
+The next step is to develop an FIU module, either in-house or with the support of a Technology Service Provider (TSP). This module:
+
+Sends consent requests to AAs on behalf of the user
+Fetches encrypted financial information once the user consents
+Handles consent lifecycle (creation, revocation, expiry)
+Ensures data is decrypted and processed securely
+The module must adhere to the technical specifications defined by ReBIT, which include data formats (JSON/XML), encryption standards, error handling, and more.
+
+3. Integration with Account Aggregators (AAs)
+Once the FIU module is developed, the next step is to integrate with one or more licensed Account Aggregators. This includes:
+
+Setting up secure API integrations to exchange consent artefacts and financial data
+Establishing mutual authentication (digital certificates)
+Configuring the routing of requests and responses
+Ensuring endpoint whitelisting and IP filtering, if applicable
+AAs act as consent managers and data pipelines, hence a successful integration ensures compliance with the user’s consent and secure data transmission.
+
+4. Sandbox Testing
+After integration, FIUs must test their module in a sandbox environment provided by AAs. The sandbox is a controlled space where:
+
+End-to-end consent flows are simulated
+Error cases (invalid consent, expired tokens, etc.) are tested
+Security, latency, and response formats are validated
+Compliance with functional and technical standards is verified
+This phase is mandatory and helps ensure smooth operations before moving to the live (production) environment.
+```
+
+Steps used to generate private and public keys:
+
+```bash
+openssl genpkey -algorithm RSA -out src/main/resources/keys/private.pem -pkeyopt rsa_keygen_bits:4096
+openssl pkey -in src/main/resources/keys/private.pem -pubout -out src/main/resources/keys/public.pem
+```
+
+I have some interesting observations based on comparisions of what I saw in an expected bash script vs the one I created.
+
+- The customer_identifier stayed the same. 
+- The Authorization Client ID and Secret I had were all capital letters and the curl script has a more relatable variation. 
+- The customer_ref_id changes in the response. 
+- The response also returned further details - template_name for example.
+- The customer_id was empty in the request and there was no 'id' field provided, but the response had one.
+
+I will create a list of bash scripts that emulate consent request notification, acceptance, FI data request, and collection next. Had started off towards creating actual database structures using the documentation to log all requests in relevant tables (in a bid to make it easier to track - current number of request notifications and checking on their status and statistics.)
+
+Focusing on two of the four API requests for now. If time permits, I will continue building on the third one.
+To reiterate this means:
+- [Request Consent Using Consent Template](https://documentation.digio.in/fiu-tsp/api-integration/consent-template/)
+- [Retrieving Status and Details of Consent Requests](https://documentation.digio.in/fiu-tsp/api-integration/retrieve-status/)
+- [List Fi Request By Consent Request Id](https://documentation.digio.in/fiu-tsp/api-integration/list_fi_request/)
+
+### Phase 1 
+- Web client => Digio bean configured.
+- DigioAAProperties => Externalized properties (prefix digio.aa)
+- 
+
